@@ -1,0 +1,176 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2206                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+
+geometry
+{
+    OC3_surge10m.stl
+    {
+        type triSurfaceMesh;
+        name floatingObject;
+
+        patchInfo
+        {
+            type wall;
+        }
+    }
+    refine1
+    {
+        type searchableBox;
+        min (-56 -56 -180 );
+        max ( 56  56  60);
+    }
+    refine2
+    {
+        type searchableBox;
+        min ( -32  -32 -150  );
+        max (  32   32   26);
+    }    
+    refine3
+    {
+        type searchableBox;
+        min ( -10000  -10000 -3  );
+        max ( 10000 10000   3);
+    }     
+
+
+
+};
+
+
+castellatedMeshControls
+{
+    maxLocalCells 100000;
+    maxGlobalCells 2000000;
+    minRefinementCells 0;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 3;
+    features
+    (
+      { file  "OC3_surge10m.eMesh"; 
+        level 0;
+      }
+    );
+
+
+
+    refinementSurfaces
+     {
+        floatingObject
+        {
+            level (3 3);
+        }
+     }
+    resolveFeatureAngle 30;
+    planarAngle 30;
+
+    refinementRegions
+    {
+        refine1
+        {
+            mode        inside;
+            levels      ((1e15 1));
+        }
+        refine2
+        {
+            mode        inside;
+            levels      ((1e15 2));
+        }    
+        refine3
+        {
+            mode        inside;
+            levels      ((1e15 3));
+        }
+        // refine4
+        // {
+        //     mode        inside;
+        //     levels      ((1e15 2));
+        // }                   
+    }
+
+    limitRegions
+    {
+    
+    }
+    
+    locationInMesh (10 10 0);
+    allowFreeStandingZoneFaces false;
+
+}
+snapControls
+{
+    nSmoothPatch 5;
+    tolerance 1.0;
+    nSolveIter 50;
+    nRelaxIter 20;
+    nFeatureSnapIter 30;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+// Settings for the layer addition.
+addLayersControls
+{
+    layers
+    {
+        floatingObject
+        {
+            nSurfaceLayers 4;
+
+        }
+    }
+    relativeSizes true;
+    expansionRatio 1.2;
+    finalLayerThickness 0.5;
+    minThickness 0.02;
+    nGrow 0;
+    featureAngle 30;
+    maxFaceThicknessRatio 0.5;
+    nSmoothSurfaceNormals 1;
+    nSmoothThickness 2;
+    minMedialAxisAngle 90;
+    maxThicknessToMedialRatio 0.3;
+    nSmoothNormals 3;
+    slipFeatureAngle 30;
+    nRelaxIter 5;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 50;
+    nRelaxedIter 20;
+}
+
+// Generic mesh quality settings. At any undoable phase these determine
+// where to undo.
+meshQualityControls
+{
+    #include "meshQualityDict"
+    relaxed
+    {
+        maxNonOrtho 75;
+    }
+
+    nSmoothScale 4;
+    errorReduction 0.75;
+}
+
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

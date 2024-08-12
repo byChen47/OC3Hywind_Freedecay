@@ -1,0 +1,82 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+markRegionNames ("freesurface_in" ); //"body"
+
+
+tarCellHeight 0.5;
+
+TotalZ   #calc "$tarCellHeight * 5";
+
+freesurface_inRegionControl
+{
+
+
+zoneMaxX  10000;
+zoneMinX -10000;
+zoneMaxY  10000;
+zoneMinY -10000;
+zoneMaxZ  $TotalZ;
+zoneMinZ -$TotalZ;
+
+
+
+
+
+
+
+}
+
+
+freesurface_outRegionControl
+{
+
+
+zoneMaxX  20000;
+zoneMinX -20000;
+zoneMaxY  20000;
+zoneMinY -20000;
+zoneMaxZ 0.384615384615;
+zoneMinZ -0.384615384615;
+
+
+
+}
+
+bodyRegionControl
+{
+
+
+
+zoneMaxX  2.30769230769;
+zoneMinX -2.30769230769;
+zoneMaxY  2.30769230769;
+zoneMinY -2.30769230769;
+zoneMaxZ  1.92307692308;
+zoneMinZ -2.30769230769;
+
+
+
+
+
+}
+
+
+
+
+
+
+// ************************************************************************* //

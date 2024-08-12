@@ -1,0 +1,78 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+
+surfaceFeatureExtract
+
+blockMesh
+
+#topoSet
+
+#subsetMesh -overwrite c0 -patch sidesHole
+
+
+
+sed -i -e 's/snap            true/snap            false/g' system/snappyHexMeshDict
+
+sed -i -e 's/addLayers       true/addLayers       false/g' system/snappyHexMeshDict
+
+
+snappyHexMesh -overwrite
+
+rm constant/polyMesh/cellLevel
+rm constant/polyMesh/pointLevel
+
+## refine 1
+cp system/markCellDict.1  system/markCellDict && mengMarkCellMultiRegion
+topoSet -dict system/topoSetDict.mark && refineMesh -dict system/refineMeshDict.xyz -overwrite && rm -rf 0
+
+echo mesh refinement 1 finished
+
+## refine 2
+cp system/markCellDict.2  system/markCellDict && mengMarkCellMultiRegion
+topoSet -dict system/topoSetDict.mark && refineMesh -dict system/refineMeshDict.xyz -overwrite && rm -rf 0
+
+echo mesh refinement 2 finished
+
+## refine 3
+cp system/markCellDict.3  system/markCellDict && mengMarkCellMultiRegion
+topoSet -dict system/topoSetDict.mark && refineMesh -dict system/refineMeshDict.xyz -overwrite && rm -rf 0
+
+echo mesh refinement 3 finished
+
+## refine 4
+cp system/markCellDict.4  system/markCellDict && mengMarkCellMultiRegion
+topoSet -dict system/topoSetDict.mark && refineMesh -dict system/refineMeshDict.zOnly -overwrite && rm -rf 0
+
+echo mesh refinement 4 finished
+
+## refine 5
+cp system/markCellDict.5  system/markCellDict && mengMarkCellMultiRegion
+topoSet -dict system/topoSetDict.mark && refineMesh -dict system/refineMeshDict.zOnly -overwrite && rm -rf 0
+
+echo mesh refinement 5 finished
+
+sed -i -e 's/castellatedMesh true/castellatedMesh false/g' system/snappyHexMeshDict
+
+
+sed -i -e 's/snap            false/snap            true/g' system/snappyHexMeshDict
+
+sed -i -e 's/addLayers       false/addLayers       true/g' system/snappyHexMeshDict
+
+
+snappyHexMesh -overwrite
+
+
+sed -i -e 's/castellatedMesh false/castellatedMesh true/g' system/snappyHexMeshDict
+
+
+rm constant/polyMesh/cellLevel
+rm constant/polyMesh/pointLevel
+
+createPatch -overwrite
+
+###transformPoints -translate "( 0 0 -0.35)"
+
+#------------------------------------------------------------------------------
